@@ -1,9 +1,9 @@
 
 function k_select {
   if test ! -z "$3"; then
-    opts=($(kubectl get ${2}s --all-namespaces | grep ${3} | awk '{print $2"__@"$1 }'))
+    opts=($(kubectl get ${2} --all-namespaces | grep ${3} | grep -v NAME | awk '{print $2"__@"$1 }'))
   else
-    opts=($(kubectl get ${2}s --all-namespaces | grep -v NAMESPACE | awk '{print $2"__@"$1 }'))
+    opts=($(kubectl get ${2} --all-namespaces | grep -v NAME | awk '{print $2"__@"$1 }'))
   fi
 
   select opt in "${opts[@]}"; do
@@ -19,9 +19,9 @@ function k_select {
 # log
 function klpod {
   if test ! -z "$1"; then
-    opts=($(kubectl get pods --all-namespaces | grep ${1} | awk '{print $2"__@"$1 }'))
+    opts=($(kubectl get pods --all-namespaces | grep ${1} | grep -v NAME | awk '{print $2"__@"$1 }'))
   else
-    opts=($(kubectl get pods --all-namespaces | grep -v NAMESPACE | awk '{print $2"__@"$1 }'))
+    opts=($(kubectl get pods --all-namespaces | grep -v NAME | awk '{print $2"__@"$1 }'))
   fi
 
   select opt in "${opts[@]}"; do
@@ -46,11 +46,19 @@ function kdeservice {
   kde service $1
 }
 
+function kdepv {
+  kde pv $1
+}
+
+function kdepvc {
+  kde pvc $1
+}
+
 function kdenode {
   if test ! -z "$1"; then
-    opts=($(kubectl get node | grep ${1} |  grep -v STATUS | awk '{print $1 }'))
+    opts=($(kubectl get node | grep ${1} |  grep -v NAME | awk '{print $1 }'))
   else
-    opts=($(kubectl get node | grep -v STATUS | awk '{print $1 }'))
+    opts=($(kubectl get node | grep -v NAME | awk '{print $1 }'))
   fi
 
   select opt in "${opts[@]}"; do
@@ -86,6 +94,14 @@ function keservice {
 
 function kedeployment {
   ke deployment $1
+}
+
+function kepv {
+  ke pv $1
+}
+
+function kepvc {
+  ke pvc $1
 }
 
 # exec
