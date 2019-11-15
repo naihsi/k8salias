@@ -1,0 +1,106 @@
+
+function k_select {
+  if test ! -z "$3"; then
+    opts=($(kubectl get ${2}s --all-namespaces | grep ${3} | awk '{print $2"__@"$1 }'))
+  else
+    opts=($(kubectl get ${2}s --all-namespaces | grep -v NAMESPACE | awk '{print $2"__@"$1 }'))
+  fi
+
+  select opt in "${opts[@]}"; do
+    com=$(echo $opt | tr "__@" " " | awk '{ print $1 }')
+    NS=$(echo $opt | tr "__@" " " | awk '{ print $2 }')
+    echo "${1} ${com}@${NS}"
+    kubectl ${1} ${2} ${com} -n ${NS}
+    break
+  done
+
+}
+
+# delete
+function kd {
+  k_select delete $1 $2
+}
+
+function kdpod {
+  kd pod $1
+}
+
+# edit
+function ke {
+  k_select edit $1 $2
+}
+
+function kepod {
+  ke pod $1
+}
+
+function keservice {
+  ke service $1
+}
+
+function kedeployment {
+  ke deployment $1
+}
+
+# exec
+function kprun {
+  if test ! -z "$1"; then
+    opts=($(kubectl get pods --all-namespaces | grep $1 | awk '{print $2"__@"$1 }'))
+  else
+    opts=($(kubectl get pods --all-namespaces | grep -v NAMESPACE | awk '{print $2"__@"$1 }'))
+  fi
+
+  select opt in "${opts[@]}"; do
+    pod=$(echo $opt | tr "__@" " " | awk '{ print $1 }')
+    NS=$(echo $opt | tr "__@" " " | awk '{ print $2 }')
+    echo "entering ${pod}@${NS}"
+    kubectl exec -it ${pod} -n ${NS} sh
+    break
+  done
+}
+
+# get in all namespaces and widely
+function ko {
+  if test ! -z "$1"; then
+
+  if test -z "$2"; then
+    kubectl get $1 --all-namespaces -owide
+  else
+    kubectl get $1 --all-namespaces -owide | grep $2
+  fi
+fi
+}
+
+function koservices {
+  ko services "$@"
+}
+
+function kopods {
+  ko pods "$@"
+}
+
+function kodeployments {
+  ko deployments "$@"
+}
+
+function kosmonitors {
+  ko servicemonitors "$@"
+}
+
+function koconfigmaps {
+  ko configmaps "$@"
+}
+
+function kosecrets {
+  ko secrets "$@"
+}
+
+function kopv {
+  ko pv "$@"
+}
+
+function kopvc {
+  ko pvc "$@"
+}
+
+
