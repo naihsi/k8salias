@@ -16,6 +16,52 @@ function k_select {
 
 }
 
+# log
+function klpod {
+  if test ! -z "$1"; then
+    opts=($(kubectl get pods --all-namespaces | grep ${1} | awk '{print $2"__@"$1 }'))
+  else
+    opts=($(kubectl get pods --all-namespaces | grep -v NAMESPACE | awk '{print $2"__@"$1 }'))
+  fi
+
+  select opt in "${opts[@]}"; do
+    com=$(echo $opt | tr "__@" " " | awk '{ print $1 }')
+    NS=$(echo $opt | tr "__@" " " | awk '{ print $2 }')
+    echo "pod ${com}@${NS}"
+    kubectl logs ${com} -n ${NS}
+    break
+  done
+}
+
+# describe
+function kdes {
+  k_select describe $1 $2
+}
+
+function kdespod {
+  kdes pod $1
+}
+
+function kdesservice {
+  kdes service $1
+}
+
+function kdesnode {
+  if test ! -z "$1"; then
+    opts=($(kubectl get node | grep ${1} |  grep -v STATUS | awk '{print $1 }'))
+  else
+    opts=($(kubectl get node | grep -v STATUS | awk '{print $1 }'))
+  fi
+
+  select opt in "${opts[@]}"; do
+    com=$(echo $opt | tr "__@" " " | awk '{ print $1 }')
+    echo "node ${com}"
+    kubectl describe node ${com} 
+    break
+  done
+
+}
+
 # delete
 function kd {
   k_select delete $1 $2
