@@ -34,19 +34,19 @@ function klpod {
 }
 
 # describe
-function kdes {
+function kde {
   k_select describe $1 $2
 }
 
-function kdespod {
-  kdes pod $1
+function kdepod {
+  kde pod $1
 }
 
-function kdesservice {
-  kdes service $1
+function kdeservice {
+  kde service $1
 }
 
-function kdesnode {
+function kdenode {
   if test ! -z "$1"; then
     opts=($(kubectl get node | grep ${1} |  grep -v STATUS | awk '{print $1 }'))
   else
