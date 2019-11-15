@@ -1,4 +1,4 @@
-#k8salias
+# k8salias
 
 # set up 
 download to your .bashrc to use the aliases
