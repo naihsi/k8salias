@@ -1,4 +1,21 @@
 
+# label
+function kalabel {
+  if test ! -z "$2"; then
+    opts=($(kubectl get nodes | grep ${2} | grep -v NAME | awk '{print $1 }'))
+  else
+    opts=($(kubectl get nodes | grep -v NAME | awk '{print $1 }'))
+  fi
+
+  select opt in "${opts[@]}"; do
+    com=$(echo $opt | tr "__@" " " | awk '{ print $1 }')
+    echo "node ${com}"
+    kubectl label node ${com} ${1}
+    break
+  done
+}
+
+# operator
 function k_select {
   if test ! -z "$3"; then
     opts=($(kubectl get ${2} --all-namespaces | grep ${3} | grep -v NAME | awk '{print $2"__@"$1 }'))
@@ -14,23 +31,6 @@ function k_select {
     break
   done
 
-}
-
-# log
-function klpod {
-  if test ! -z "$1"; then
-    opts=($(kubectl get pods --all-namespaces | grep ${1} | grep -v NAME | awk '{print $2"__@"$1 }'))
-  else
-    opts=($(kubectl get pods --all-namespaces | grep -v NAME | awk '{print $2"__@"$1 }'))
-  fi
-
-  select opt in "${opts[@]}"; do
-    com=$(echo $opt | tr "__@" " " | awk '{ print $1 }')
-    NS=$(echo $opt | tr "__@" " " | awk '{ print $2 }')
-    echo "pod ${com}@${NS}"
-    kubectl logs ${com} -n ${NS}
-    break
-  done
 }
 
 # describe
@@ -104,12 +104,14 @@ function kepvc {
   ke pvc $1
 }
 
+
+# pod only
 # exec
 function kprun {
   if test ! -z "$1"; then
-    opts=($(kubectl get pods --all-namespaces | grep $1 | awk '{print $2"__@"$1 }'))
+    opts=($(kubectl get pods --all-namespaces | grep $1 | grep -v NAME | awk '{print $2"__@"$1 }'))
   else
-    opts=($(kubectl get pods --all-namespaces | grep -v NAMESPACE | awk '{print $2"__@"$1 }'))
+    opts=($(kubectl get pods --all-namespaces | grep -v NAME | awk '{print $2"__@"$1 }'))
   fi
 
   select opt in "${opts[@]}"; do
@@ -117,6 +119,23 @@ function kprun {
     NS=$(echo $opt | tr "__@" " " | awk '{ print $2 }')
     echo "entering ${pod}@${NS}"
     kubectl exec -it ${pod} -n ${NS} sh
+    break
+  done
+}
+
+# log
+function kplog {
+  if test ! -z "$1"; then
+    opts=($(kubectl get pods --all-namespaces | grep ${1} | grep -v NAME | awk '{print $2"__@"$1 }'))
+  else
+    opts=($(kubectl get pods --all-namespaces | grep -v NAME | awk '{print $2"__@"$1 }'))
+  fi
+
+  select opt in "${opts[@]}"; do
+    com=$(echo $opt | tr "__@" " " | awk '{ print $1 }')
+    NS=$(echo $opt | tr "__@" " " | awk '{ print $2 }')
+    echo "pod ${com}@${NS}"
+    kubectl logs ${com} -n ${NS}
     break
   done
 }
@@ -139,6 +158,10 @@ function koservices {
 
 function kopods {
   ko pods "$@"
+}
+
+function koingresses {
+  ko ingresses "$@"
 }
 
 function kodeployments {
