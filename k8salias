@@ -140,6 +140,23 @@ function kplog {
   done
 }
 
+function kptail {
+  if test ! -z "$1"; then
+    opts=($(kubectl get pods --all-namespaces | grep ${1} | grep -v NAME | awk '{print $2"__@"$1 }'))
+  else
+    opts=($(kubectl get pods --all-namespaces | grep -v NAME | awk '{print $2"__@"$1 }'))
+  fi
+
+  select opt in "${opts[@]}"; do
+    com=$(echo $opt | tr "__@" " " | awk '{ print $1 }')
+    NS=$(echo $opt | tr "__@" " " | awk '{ print $2 }')
+    echo "pod ${com}@${NS}"
+    kubectl logs ${com} -n ${NS} -f
+    break
+  done
+}
+
+
 # get in all namespaces and widely
 function ko {
   if test ! -z "$1"; then
