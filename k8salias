@@ -96,6 +96,10 @@ function kedeployment {
   ke deployment $1
 }
 
+function kedaemonset {
+  ke daemonset $1
+}
+
 function kepv {
   ke pv $1
 }
@@ -183,6 +187,10 @@ function koingresses {
 
 function kodeployments {
   ko deployments "$@"
+}
+
+function kodaemonsets {
+  ko daemonsets "$@"
 }
 
 function kosmonitors {
