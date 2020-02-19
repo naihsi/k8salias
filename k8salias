@@ -100,6 +100,10 @@ function kedaemonset {
   ke daemonset $1
 }
 
+function kestatefulset {
+  ke statefulset $1
+}
+
 function kepv {
   ke pv $1
 }
@@ -191,6 +195,10 @@ function kodeployments {
 
 function kodaemonsets {
   ko daemonsets "$@"
+}
+
+function kostatefulsets {
+  ko statefulsets "$@"
 }
 
 function kosmonitors {
