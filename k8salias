@@ -46,6 +46,14 @@ function kdeservice {
   kde service $1
 }
 
+function kdedaemonset {
+  kde daemonset $1
+}
+
+function kdestatefulset {
+  kde statefulset $1
+}
+
 function kdepv {
   kde pv $1
 }
