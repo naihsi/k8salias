@@ -1,4 +1,33 @@
 
+# rotate
+function k_rotate {
+  if test ! -z "$2"; then
+    opts=($(kubectl get ${1} --all-namespaces | grep ${2} | grep -v NAME | awk '{print $2"__@"$1 }'))
+  else
+    opts=($(kubectl get ${1} --all-namespaces | grep -v NAME | awk '{print $2"__@"$1 }'))
+  fi
+
+  select opt in "${opts[@]}"; do
+    com=$(echo $opt | tr "__@" " " | awk '{ print $1 }')
+    NS=$(echo $opt | tr "__@" " " | awk '{ print $2 }')
+    kubectl patch ${1} ${com} -n ${NS} -p  \
+      "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"pn-rotate\":\"`date +'%Y%m%d%H%M%S'`\"}}}}}"
+    break
+  done
+}
+
+function krodeployment {
+  k_rotate deployment "$@"
+}
+
+function krodaemonset {
+  k_rotate daemonset "$@"
+}
+
+function krostatefulset {
+  k_rotate statefulset "$@"
+}
+
 # label
 function kalabel {
   if test ! -z "$2"; then
