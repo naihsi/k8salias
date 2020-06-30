@@ -116,6 +116,10 @@ function kdpod {
   kd pod $1
 }
 
+function kdjob {
+  kd job $1
+}
+
 # edit
 function ke {
   k_select edit $1 $2
@@ -125,12 +129,20 @@ function kepod {
   ke pod $1
 }
 
+function kejob {
+  ke job $1
+}
+
 function keservice {
   ke service $1
 }
 
 function kedeployment {
   ke deployment $1
+}
+
+function kehpa {
+  ke hpa $1
 }
 
 function kedaemonset {
@@ -220,6 +232,14 @@ function koservices {
 
 function kopods {
   ko pods "$@"
+}
+
+function kohpa {
+  ko hpa "$@"
+}
+
+function kojobs {
+  ko jobs "$@"
 }
 
 function koingresses {
